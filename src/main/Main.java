@@ -18,7 +18,26 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
         // customizeThreadPoolExecutorClassExample();
         // implementingPriorityBasedExecutorExample();
-        implementingThreadFactoryInterfaceExample();
+        // implementingThreadFactoryInterfaceExample();
+        usingThreadFactoryInExecutorExample();
+    }
+
+
+    private static void usingThreadFactoryInExecutorExample() throws InterruptedException {
+        MyThreadFactory threadFactory = new MyThreadFactory
+                ("MyThreadFactory");
+
+        ExecutorService executor = Executors.newCachedThreadPool
+                (threadFactory);
+
+        MyTask task = new MyTask();
+        executor.submit(task);
+
+        executor.shutdown();
+
+        executor.awaitTermination(1, TimeUnit.DAYS);
+
+        System.out.printf("Main: End of the program.\n");
     }
 
     private static void implementingThreadFactoryInterfaceExample() throws InterruptedException {
