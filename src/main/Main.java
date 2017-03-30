@@ -3,6 +3,8 @@ package main;
 import main.customizing_threadPoolExecutor_class.MyExecutor;
 import main.customizing_threadPoolExecutor_class.SleepTwoSecondsTask;
 import main.implementing_priority_based_executor_class.MyPriorityTask;
+import main.implementing_threadFactoryInterface.MyTask;
+import main.implementing_threadFactoryInterface.MyThreadFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,9 +15,24 @@ import java.util.concurrent.*;
  */
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         // customizeThreadPoolExecutorClassExample();
-        implementingPriorityBasedExecutorExample();
+        // implementingPriorityBasedExecutorExample();
+        implementingThreadFactoryInterfaceExample();
+    }
+
+    private static void implementingThreadFactoryInterfaceExample() throws InterruptedException {
+        MyThreadFactory myFactory = new MyThreadFactory("MyThreadFactory");
+
+        MyTask task = new MyTask();
+        Thread thread = myFactory.newThread(task);
+
+        thread.start();
+        thread.join();
+
+        System.out.printf("Main: Thread information.\n");
+        System.out.printf("%s\n", thread);
+        System.out.printf("Main: End of the example.\n");
     }
 
     private static void implementingPriorityBasedExecutorExample() {
