@@ -7,6 +7,8 @@ import main.customizing_threadPoolExecutor_class.SleepTwoSecondsTask;
 import main.implementing_priority_based_executor_class.MyPriorityTask;
 import main.implementing_threadFactoryInterface.MyTask;
 import main.implementing_threadFactoryInterface.MyThreadFactory;
+import main.implementing_threadFactory_to_generate_custom_threads_forkAndJoin_framework.MyRecursiveTask;
+import main.implementing_threadFactory_to_generate_custom_threads_forkAndJoin_framework.MyWorkerThreadFactory;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,14 +20,40 @@ import java.util.concurrent.*;
  */
 public class Main {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, ExecutionException {
         // customizeThreadPoolExecutorClassExample();
         // implementingPriorityBasedExecutorExample();
         // implementingThreadFactoryInterfaceExample();
         // usingThreadFactoryInExecutorExample();
-        customizingTasksRunningInScheduledThreadPoolExample();
+        // customizingTasksRunningInScheduledThreadPoolExample();
+        threadFactoryToGenerateCustomForkJoinExample();
     }
 
+    private static void threadFactoryToGenerateCustomForkJoinExample() throws InterruptedException, ExecutionException {
+        MyWorkerThreadFactory factory = new MyWorkerThreadFactory();
+
+        ForkJoinPool pool = new ForkJoinPool(4, factory, null, false);
+
+        int array[] = new int[100000];
+        for (int i = 0; i < array.length; i++) {
+            array[i] = 1;
+        }
+
+        MyRecursiveTask task = new MyRecursiveTask(array, 0, array.
+                length);
+
+        pool.execute(task);
+
+        task.join();
+
+        pool.shutdown();
+
+        pool.awaitTermination(1, TimeUnit.DAYS);
+
+        System.out.printf("Main: Result: %d\n", task.get());
+
+        System.out.printf("Main: End of the program\n");
+    }
 
     private static void customizingTasksRunningInScheduledThreadPoolExample() throws InterruptedException {
         MyScheduledThreadPoolExecutor executor = new MyScheduledThreadPoolExecutor(2);
