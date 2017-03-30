@@ -1,5 +1,7 @@
 package main;
 
+import main.customizing_tasks_running_in_scheduled_thread_pool.MyScheduledThreadPoolExecutor;
+import main.customizing_tasks_running_in_scheduled_thread_pool.ScTask;
 import main.customizing_threadPoolExecutor_class.MyExecutor;
 import main.customizing_threadPoolExecutor_class.SleepTwoSecondsTask;
 import main.implementing_priority_based_executor_class.MyPriorityTask;
@@ -7,6 +9,7 @@ import main.implementing_threadFactoryInterface.MyTask;
 import main.implementing_threadFactoryInterface.MyThreadFactory;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -19,9 +22,27 @@ public class Main {
         // customizeThreadPoolExecutorClassExample();
         // implementingPriorityBasedExecutorExample();
         // implementingThreadFactoryInterfaceExample();
-        usingThreadFactoryInExecutorExample();
+        // usingThreadFactoryInExecutorExample();
+        customizingTasksRunningInScheduledThreadPoolExample();
     }
 
+
+    private static void customizingTasksRunningInScheduledThreadPoolExample() throws InterruptedException {
+        MyScheduledThreadPoolExecutor executor = new MyScheduledThreadPoolExecutor(2);
+        ScTask task = new ScTask();
+        System.out.printf("Main: %s\n", new Date());
+        executor.schedule(task, 1, TimeUnit.SECONDS);
+        TimeUnit.SECONDS.sleep(3);
+        task = new ScTask();
+        System.out.printf("Main: %s\n", new Date());
+        executor.scheduleAtFixedRate(task, 1, 3, TimeUnit.SECONDS);
+        TimeUnit.SECONDS.sleep(10);
+
+        executor.shutdown();
+        executor.awaitTermination(1, TimeUnit.DAYS);
+
+        System.out.printf("Main: End of the program.\n");
+    }
 
     private static void usingThreadFactoryInExecutorExample() throws InterruptedException {
         MyThreadFactory threadFactory = new MyThreadFactory
