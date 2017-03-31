@@ -5,6 +5,8 @@ import main.customizing_tasks_running_in_scheduled_thread_pool.MyScheduledThread
 import main.customizing_tasks_running_in_scheduled_thread_pool.ScTask;
 import main.customizing_threadPoolExecutor_class.MyExecutor;
 import main.customizing_threadPoolExecutor_class.SleepTwoSecondsTask;
+import main.implementing_custom_lock_class.LTask;
+import main.implementing_custom_lock_class.MyLock;
 import main.implementing_priority_based_executor_class.MyPriorityTask;
 import main.implementing_threadFactoryInterface.MyTask;
 import main.implementing_threadFactoryInterface.MyThreadFactory;
@@ -28,7 +30,36 @@ public class Main {
         // usingThreadFactoryInExecutorExample();
         // customizingTasksRunningInScheduledThreadPoolExample();
         //threadFactoryToGenerateCustomForkJoinExample();
-        customizingTasksRunningInForkJoinFrameworkExample();
+        // customizingTasksRunningInForkJoinFrameworkExample();
+        implementingCustomLockExample();
+    }
+
+
+    private static void implementingCustomLockExample() {
+        MyLock lock = new MyLock();
+        for (int i = 0; i < 10; i++) {
+            LTask task = new LTask("Task-" + i, lock);
+            Thread thread = new Thread(task);
+            thread.start();
+        }
+
+        boolean value;
+        do {
+            try {
+                value = lock.tryLock(1, TimeUnit.SECONDS);
+                if (!value) {
+                    System.out.printf("Main: Trying to get the Lock\n");
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                value = false;
+            }
+        } while (!value);
+
+        System.out.printf("Main: Got the lock\n");
+        lock.unlock();
+
+        System.out.printf("Main: End of the program\n");
     }
 
 
