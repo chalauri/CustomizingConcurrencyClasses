@@ -12,6 +12,10 @@ import main.implementing_threadFactoryInterface.MyTask;
 import main.implementing_threadFactoryInterface.MyThreadFactory;
 import main.implementing_threadFactory_to_generate_custom_threads_forkAndJoin_framework.MyRecursiveTask;
 import main.implementing_threadFactory_to_generate_custom_threads_forkAndJoin_framework.MyWorkerThreadFactory;
+import main.implementing_transfer_queue_based_on_priorities.Consumer;
+import main.implementing_transfer_queue_based_on_priorities.Event;
+import main.implementing_transfer_queue_based_on_priorities.MyPriorityTransferQueue;
+import main.implementing_transfer_queue_based_on_priorities.Producer;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,7 +35,50 @@ public class Main {
         // customizingTasksRunningInScheduledThreadPoolExample();
         //threadFactoryToGenerateCustomForkJoinExample();
         // customizingTasksRunningInForkJoinFrameworkExample();
-        implementingCustomLockExample();
+        // implementingCustomLockExample();
+        implementingTransferQueueBasedOnPrioritiesExample();
+    }
+
+    private static void implementingTransferQueueBasedOnPrioritiesExample() throws InterruptedException {
+        MyPriorityTransferQueue<Event> buffer = new MyPriorityTransferQueue<Event>();
+
+        Producer producer = new Producer(buffer);
+        Thread producerThreads[] = new Thread[10];
+        for (int i = 0; i < producerThreads.length; i++) {
+            producerThreads[i] = new Thread(producer);
+            producerThreads[i].start();
+        }
+
+        Consumer consumer = new Consumer(buffer);
+        Thread consumerThread = new Thread(consumer);
+        consumerThread.start();
+
+        System.out.printf("Main: Buffer: Consumer count: %d\n", buffer.
+                getWaitingConsumerCount());
+
+        Event myEvent = new Event("Core Event", 0);
+        buffer.transfer(myEvent);
+        System.out.printf("Main: My Event has ben transferred.\n");
+
+        for (int i = 0; i < producerThreads.length; i++) {
+            try {
+                producerThreads[i].join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        TimeUnit.SECONDS.sleep(1);
+
+        System.out.printf("Main: Buffer: Consumer count: %d\n", buffer.
+                getWaitingConsumerCount());
+
+        myEvent = new Event("Core Event 2", 0);
+        buffer.transfer(myEvent);
+
+        consumerThread.join();
+
+        System.out.printf("Main: End of the program\n");
     }
 
 
