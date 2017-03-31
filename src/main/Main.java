@@ -7,6 +7,9 @@ import main.customizing_threadPoolExecutor_class.MyExecutor;
 import main.customizing_threadPoolExecutor_class.SleepTwoSecondsTask;
 import main.implementing_custom_lock_class.LTask;
 import main.implementing_custom_lock_class.MyLock;
+import main.implementing_own_atomic_object.ParkingCounter;
+import main.implementing_own_atomic_object.Sensor1;
+import main.implementing_own_atomic_object.Sensor2;
 import main.implementing_priority_based_executor_class.MyPriorityTask;
 import main.implementing_threadFactoryInterface.MyTask;
 import main.implementing_threadFactoryInterface.MyThreadFactory;
@@ -33,10 +36,29 @@ public class Main {
         // implementingThreadFactoryInterfaceExample();
         // usingThreadFactoryInExecutorExample();
         // customizingTasksRunningInScheduledThreadPoolExample();
-        //threadFactoryToGenerateCustomForkJoinExample();
+        // threadFactoryToGenerateCustomForkJoinExample();
         // customizingTasksRunningInForkJoinFrameworkExample();
         // implementingCustomLockExample();
-        implementingTransferQueueBasedOnPrioritiesExample();
+        // implementingTransferQueueBasedOnPrioritiesExample();
+        implementingOwnAtomicObjectExample();
+    }
+
+    private static void implementingOwnAtomicObjectExample() throws InterruptedException {
+        ParkingCounter counter = new ParkingCounter(5);
+
+        Sensor1 sensor1 = new Sensor1(counter);
+        Sensor2 sensor2 = new Sensor2(counter);
+        Thread thread1 = new Thread(sensor1);
+        Thread thread2 = new Thread(sensor2);
+        thread1.start();
+        thread2.start();
+
+        thread1.join();
+        thread2.join();
+
+        System.out.printf("Main: Number of cars: %d\n", counter.get());
+
+        System.out.printf("Main: End of the program.\n");
     }
 
     private static void implementingTransferQueueBasedOnPrioritiesExample() throws InterruptedException {
