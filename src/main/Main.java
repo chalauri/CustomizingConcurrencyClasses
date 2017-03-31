@@ -1,5 +1,6 @@
 package main;
 
+import main.customizing_tasks_running_in_forkJoin_framework.WTask;
 import main.customizing_tasks_running_in_scheduled_thread_pool.MyScheduledThreadPoolExecutor;
 import main.customizing_tasks_running_in_scheduled_thread_pool.ScTask;
 import main.customizing_threadPoolExecutor_class.MyExecutor;
@@ -26,7 +27,18 @@ public class Main {
         // implementingThreadFactoryInterfaceExample();
         // usingThreadFactoryInExecutorExample();
         // customizingTasksRunningInScheduledThreadPoolExample();
-        threadFactoryToGenerateCustomForkJoinExample();
+        //threadFactoryToGenerateCustomForkJoinExample();
+        customizingTasksRunningInForkJoinFrameworkExample();
+    }
+
+
+    private static void customizingTasksRunningInForkJoinFrameworkExample() {
+        int array[] = new int[10000];
+        ForkJoinPool pool = new ForkJoinPool();
+        WTask task = new WTask("Task", array, 0, array.length);
+        pool.invoke(task);
+        pool.shutdown();
+        System.out.printf("Main: End of the program.\n");
     }
 
     private static void threadFactoryToGenerateCustomForkJoinExample() throws InterruptedException, ExecutionException {
